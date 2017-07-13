@@ -1,3 +1,6 @@
 bundle.js
 .npmrc
 node_modules
+.chrome
+.vscode
+.DS_Store
