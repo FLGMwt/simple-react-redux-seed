@@ -1,13 +1,13 @@
 import {createStore} from 'redux';
-import React from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 
-document.body.style.fontSize = '50px';
-
 const INCREMENT = 'INCREMENT';
 
-const increment = () => ({type: INCREMENT});
+function increment() {
+  return {type: INCREMENT};
+}
 
 function counter(state = 0, action) {
   switch (action.type) {
@@ -18,29 +18,46 @@ function counter(state = 0, action) {
   }
 }
 
-const RawApp = ({count, onClick}) => (
-  <div>
-    <div>
-      Click count: {count}
-    </div>
-    <button onClick={onClick} style={{fontSize: 50}}>Add One</button>
-  </div>
-);
+class RawApp extends Component {
+  render() {
+    return  (
+      <div>
+        <div>
+          Click count: {this.props.count}
+        </div>
+        <button onClick={this.props.onClick}>Add One</button>
+      </div>
+    );
+  }
+}
 
-const App = connect(
-  state => ({count: state}),
-  {onClick: increment}
+const mapStateToProps = function(state) {
+  return {
+    count: state,
+  };
+};
+
+const mapDispatchToProps = function(dispatch) {
+  return {
+    onClick: function() {
+      dispatch(increment());
+    }
+  }
+}
+
+const ConnectedApp = connect(
+  mapStateToProps,
+  mapDispatchToProps,
 )(RawApp);
 
-const store = createStore(counter);
-
-const Root = () => (
-  <Provider store={store}>
-    <App />
-  </Provider>
+const store = createStore(
+  counter,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
 ReactDOM.render(
-  <Root />,
+  <Provider store={store}>
+    <ConnectedApp />
+  </Provider>,
   document.getElementById('app')
 )
